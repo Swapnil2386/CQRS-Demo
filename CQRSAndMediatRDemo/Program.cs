@@ -1,5 +1,6 @@
 using CQRSAndMediatRDemo.Data;
 using CQRSAndMediatRDemo.Repositories.Students;
+using CQRSAndMediatRDemo.Repositories.Teachers;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<DbContextClass>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

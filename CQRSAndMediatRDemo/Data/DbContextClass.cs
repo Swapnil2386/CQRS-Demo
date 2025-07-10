@@ -17,6 +17,7 @@ namespace CQRSAndMediatRDemo.Data
         }
 
         public DbSet<StudentDetails> Students { get; set; }
+        public DbSet<TeacherDetails> Teachers { get; set; }
     }
 
 }
