@@ -17,6 +17,7 @@ namespace CQRSAndMediatRDemo.Handlers.Students
 
         public async Task<List<StudentDetails>> Handle(GetStudentListQuery query, CancellationToken cancellationToken)
         {
+            //throw new Exception("An error occurred while fetching the student list.");
             return await _studentRepository.GetStudentListAsync();
         }
     }

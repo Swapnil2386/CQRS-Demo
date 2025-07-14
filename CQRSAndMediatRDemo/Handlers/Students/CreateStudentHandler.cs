@@ -16,6 +16,7 @@ namespace CQRSAndMediatRDemo.Handlers.Students
         }
         public async Task<StudentDetails> Handle(CreateStudentCommand command, CancellationToken cancellationToken)
         {
+            //throw new Exception("This is test exception");
             var studentDetails = new StudentDetails()
             {
                 StudentName = command.StudentName,

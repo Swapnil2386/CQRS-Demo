@@ -1,22 +1,56 @@
 using CQRSAndMediatRDemo.Data;
+using CQRSAndMediatRDemo.Middleware;
+using CQRSAndMediatRDemo.Repositories.MiddlewarePipeline;
 using CQRSAndMediatRDemo.Repositories.Students;
 using CQRSAndMediatRDemo.Repositories.Teachers;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<DbContextClass>();
+builder.Services.AddDbContext<LoggingDbContext>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(DbLoggingBehavior<,>)
+); builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ExceptionLoggingBehavior<,>)
+);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    //options.Authority = "https://localhost:5001"; // Your Identity Server URL
+    //options.Audience = "api1"; // Your API resource name
+    //options.RequireHttpsMetadata = false; // Set to true in production
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 
 var app = builder.Build();
 
@@ -28,9 +62,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.Run();

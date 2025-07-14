@@ -7,5 +7,7 @@
         public string TeacherEmail { get; set; }
         public string TeacherAddress { get; set; }
 
+        // Navigation to mapping table
+
     }
 }

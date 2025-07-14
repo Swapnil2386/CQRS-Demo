@@ -32,7 +32,10 @@ namespace CQRSAndMediatRDemo.Repositories.Teachers
 
         public Task<List<TeacherDetails>> GetTeacherListAsync()
         {
-            return _dbContext.Teachers.ToListAsync();
+            return  _dbContext.Teachers
+            .FromSqlRaw("EXEC GetAllTeachers")
+            .ToListAsync();
+            //return _dbContext.Teachers.ToListAsync();
         }
 
         public Task<int> UpdateTeacherAsync(TeacherDetails teacherDetails)

@@ -2,12 +2,14 @@
 using CQRSAndMediatRDemo.Models;
 using CQRSAndMediatRDemo.Queries.Students;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CQRSAndMediatRDemo.Controllers.Students
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentsController : ControllerBase
     {
         private readonly IMediator mediator;
